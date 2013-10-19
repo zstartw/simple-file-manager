@@ -5,8 +5,7 @@ A Simple PHP file manager.  The code is a single php file.
 
 Just copy the index.php file to a folder on your webserver.
 
-Why it is good
-==============
+## Why it is good
 
 - Single file, there are no images, or css folders.  
 - Ajax based so it is fast, but doesn't break the back button
@@ -15,3 +14,7 @@ Why it is good
 - Works with Unicode file names
 - The interface is usable from an iPad
 - XSRF protection (though no authentication system)
+
+## Screenshot
+
+![Screenshot](https://raw.github.com/jcampbell1/simple-file-manager/master/screenshot.png "Screenshot")
