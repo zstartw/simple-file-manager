@@ -3,7 +3,7 @@ simple-file-manager
 
 A Simple PHP file manager.  The code is a single php file.  
 
-Just copy the index.php file to a folder on your webserver.
+Just copy `index.php` to a folder on your webserver.
 
 ## Why it is good
 
