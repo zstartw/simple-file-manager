@@ -404,5 +404,5 @@ $(function(){
 </tr></thead><tbody id="list">
 
 </tbody></table>
-<footer>simple php filemanager by <a href="https://github.com/jcampbell1">jcampbell1</a><footer>
+<footer>simple php filemanager by <a href="https://github.com/jcampbell1">jcampbell1</a></footer>
 </body></html>
