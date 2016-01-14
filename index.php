@@ -70,6 +70,11 @@ if($_GET['do'] == 'list') {
 	rmrf($file);
 	exit;
 } elseif ($_POST['do'] == 'mkdir') {
+	// don't allow actions outside root. we also filter out slashes to catch args like './../outside'
+	$dir = $_POST['name'];
+	$dir = str_replace('/', '', $dir);
+	if(substr($dir, 0, 2) === '..')
+	    exit;
 	chdir($file);
 	@mkdir($_POST['name']);
 	exit;
