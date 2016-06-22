@@ -6,6 +6,9 @@ Copyright John Campbell (jcampbell1)
 Liscense: MIT
 ********************************/
 
+// Set to false to disable delete button and delete POST request.
+$allow_delete = true;
+
 /* Uncomment section below, if you want a trivial password protection */
 
 /*
@@ -54,8 +57,11 @@ if($_GET['do'] == 'list') {
 	        	'name' => basename($i),
 	        	'path' => preg_replace('@^\./@', '', $i),
 	        	'is_dir' => is_dir($i),
-	        	'is_deleteable' => (!is_dir($i) && is_writable($directory)) || 
-	        					   (is_dir($i) && is_writable($directory) && is_recursively_deleteable($i)),
+	        	'is_deleteable' => $allow_delete && ((!is_dir($i) && is_writable($directory)) ||
+                                                           (is_dir($i) && is_writable($directory) && is_recursively_deleteable($i))),
+
+	        	
+	        	
 	        	'is_readable' => is_readable($i),
 	        	'is_writable' => is_writable($i),
 	        	'is_executable' => is_executable($i),
@@ -67,7 +73,9 @@ if($_GET['do'] == 'list') {
 	echo json_encode(array('success' => true, 'is_writable' => is_writable($file), 'results' =>$result));
 	exit;
 } elseif ($_POST['do'] == 'delete') {
-	rmrf($file);
+	if($allow_delete) {
+		rmrf($file);
+	}
 	exit;
 } elseif ($_POST['do'] == 'mkdir') {
 	// don't allow actions outside root. we also filter out slashes to catch args like './../outside'
