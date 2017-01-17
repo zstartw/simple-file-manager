@@ -8,6 +8,7 @@ Liscense: MIT
 
 // Set to false to disable delete button and delete POST request.
 $allow_delete = true;
+$allow_create_folder= true;
 
 /* Uncomment section below, if you want a trivial password protection */
 
@@ -77,7 +78,7 @@ if($_GET['do'] == 'list') {
 		rmrf($file);
 	}
 	exit;
-} elseif ($_POST['do'] == 'mkdir') {
+} elseif ($_POST['do'] == 'mkdir' && $allow_create_folder== true) {
 	// don't allow actions outside root. we also filter out slashes to catch args like './../outside'
 	$dir = $_POST['name'];
 	$dir = str_replace('/', '', $dir);
@@ -395,10 +396,12 @@ $(function(){
 </script>
 </head><body>
 <div id="top">
+   <?php if($allow_upload == true): ?>
 	<form action="?" method="post" id="mkdir" />
 		<label for=dirname>Create New Folder</label><input id=dirname type=text name=name value="" />
 		<input type="submit" value="create" />
 	</form>
+   <?php endif; ?>
 	<div id="file_drop_target">
 		Drag Files Here To Upload
 		<b>or</b>
