@@ -9,11 +9,11 @@ Liscense: MIT
 //Disable error report for undefined superglobals
 error_reporting( error_reporting() & ~E_NOTICE );
 
-// Set to false to disable delete button and delete POST request.
-
-$allow_delete = true;
-$allow_create_folder = true;
-$allow_upload = true;
+//Security options
+$allow_delete = true; // Set to false to disable delete button and delete POST request.
+$allow_create_folder = true; // Set to false to disable folder creation
+$allow_upload = true; // Set to true to allow upload files
+$allow_direct_link = true; // Set to false to only allow downloads and not direct link
 
 
 /* Uncomment section below, if you want a trivial password protection */
@@ -355,6 +355,8 @@ $(function(){
 		var $link = $('<a class="name" />')
 			.attr('href', data.is_dir ? '#' + data.path : './'+data.path)
 			.text(data.name);
+		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
+        	if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
 		var $dl_link = $('<a/>').attr('href','?do=download&file='+encodeURIComponent(data.path))
 			.addClass('download').text('download');
 		var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
