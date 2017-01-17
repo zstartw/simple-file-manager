@@ -6,6 +6,9 @@ Copyright John Campbell (jcampbell1)
 Liscense: MIT
 ********************************/
 
+//Disable error report for undefined superglobals
+error_reporting( error_reporting() & ~E_NOTICE );
+
 // Set to false to disable delete button and delete POST request.
 $allow_delete = false;
 $allow_upload = true;
