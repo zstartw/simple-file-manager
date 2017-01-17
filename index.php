@@ -7,7 +7,8 @@ Liscense: MIT
 ********************************/
 
 // Set to false to disable delete button and delete POST request.
-$allow_delete = true;
+$allow_delete = false;
+$allow_upload = true;
 
 /* Uncomment section below, if you want a trivial password protection */
 
@@ -86,7 +87,7 @@ if($_GET['do'] == 'list') {
 	chdir($file);
 	@mkdir($_POST['name']);
 	exit;
-} elseif ($_POST['do'] == 'upload') {
+} elseif ($_POST['do'] == 'upload' && $allow_upload == true) {
 	var_dump($_POST);
 	var_dump($_FILES);
 	var_dump($_FILES['file_data']['tmp_name']);
@@ -260,7 +261,7 @@ $(function(){
 		$dir.val('');
 		return false;
 	});
-
+<?php if($allow_upload == true): ?>
 	// file upload stuff
 	$('#file_drop_target').bind('dragover',function(){
 		$(this).addClass('drag_over');
@@ -326,7 +327,7 @@ $(function(){
 			.append( $('<span/>').html(' file size - <b>' + formatFileSize(file.size) + '</b>'
 				+' exceeds max upload size of <b>' + formatFileSize(MAX_UPLOAD_SIZE) + '</b>')  );
 	}
-
+<?php endif; ?>
 	function list() {
 		var hashval = window.location.hash.substr(1);
 		$.get('?',{'do':'list','file':hashval},function(data) {
@@ -399,11 +400,13 @@ $(function(){
 		<label for=dirname>Create New Folder</label><input id=dirname type=text name=name value="" />
 		<input type="submit" value="create" />
 	</form>
+   <?php if($allow_upload == true): ?>
 	<div id="file_drop_target">
 		Drag Files Here To Upload
 		<b>or</b>
 		<input type="file" multiple />
 	</div>
+   <?php endif; ?>
 	<div id="breadcrumb">&nbsp;</div>
 </div>
 
