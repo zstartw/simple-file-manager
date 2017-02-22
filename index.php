@@ -15,7 +15,7 @@ $allow_create_folder = true; // Set to false to disable folder creation
 $allow_upload = true; // Set to true to allow upload files
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
 
-$disallowed_extensions = array('php');  // must be an array.
+$disallowed_extensions = ['php'];  // must be an array.
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -55,12 +55,12 @@ $file = $_REQUEST['file'] ?: '.';
 if($_GET['do'] == 'list') {
 	if (is_dir($file)) {
 		$directory = $file;
-		$result = array();
-		$files = array_diff(scandir($directory), array('.','..'));
+		$result = [];
+		$files = array_diff(scandir($directory), ['.','..']);
 	    foreach($files as $entry) if($entry !== basename(__FILE__)) {
     		$i = $directory . '/' . $entry;
 	    	$stat = stat($i);
-	        $result[] = array(
+	        $result[] = [
 	        	'mtime' => $stat['mtime'],
 	        	'size' => $stat['size'],
 	        	'name' => basename($i),
@@ -68,18 +68,15 @@ if($_GET['do'] == 'list') {
 	        	'is_dir' => is_dir($i),
 	        	'is_deleteable' => $allow_delete && ((!is_dir($i) && is_writable($directory)) ||
                                                            (is_dir($i) && is_writable($directory) && is_recursively_deleteable($i))),
-
-	        	
-	        	
 	        	'is_readable' => is_readable($i),
 	        	'is_writable' => is_writable($i),
 	        	'is_executable' => is_executable($i),
-	        );
+	        ];
 	    }
 	} else {
 		err(412,"Not a Directory");
 	}
-	echo json_encode(array('success' => true, 'is_writable' => is_writable($file), 'results' =>$result));
+	echo json_encode(['success' => true, 'is_writable' => is_writable($file), 'results' =>$result]);
 	exit;
 } elseif ($_POST['do'] == 'delete') {
 	if($allow_delete) {
@@ -117,7 +114,7 @@ if($_GET['do'] == 'list') {
 }
 function rmrf($dir) {
 	if(is_dir($dir)) {
-		$files = array_diff(scandir($dir), array('.','..'));
+		$files = array_diff(scandir($dir), ['.','..']);
 		foreach ($files as $file)
 			rmrf("$dir/$file");
 		rmdir($dir);
@@ -126,11 +123,11 @@ function rmrf($dir) {
 	}
 }
 function is_recursively_deleteable($d) {
-	$stack = array($d);
+	$stack = [$d];
 	while($dir = array_pop($stack)) {
 		if(!is_readable($dir) || !is_writable($dir)) 
 			return false;
-		$files = array_diff(scandir($dir), array('.','..'));
+		$files = array_diff(scandir($dir), ['.','..']);
 		foreach($files as $file) if(is_dir($file)) {
 			$stack[] = "$dir/$file";
 		}
@@ -139,13 +136,13 @@ function is_recursively_deleteable($d) {
 }
 
 function err($code,$msg) {
-	echo json_encode(array('error' => array('code'=>intval($code), 'msg' => $msg)));
+	echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
 	exit;
 }
 
 function asBytes($ini_v) {
 	$ini_v = trim($ini_v);
-	$s = array('g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10);
+	$s = ['g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10];
 	return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
 }
 $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('upload_max_filesize')));
