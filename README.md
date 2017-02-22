@@ -24,7 +24,7 @@ If you allow uploads on the public web, it is only a matter of time before your 
  - Use a `.htaccess` file with Apache, or `auth_basic` for nginx
  - Only use this on a private network
 
- HT: [@beardog108](https://github.com/beardog108)
+HT: [@beardog108](https://github.com/beardog108)
 
 ## Screenshot
 
