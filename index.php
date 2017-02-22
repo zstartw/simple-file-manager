@@ -37,8 +37,9 @@ if($PASSWORD) {
 // must be in UTF-8 or `basename` doesn't work
 setlocale(LC_ALL,'en_US.UTF-8');
 
-$tmp = realpath($_REQUEST['file']);
 $tmp_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+$tmp = get_absolute_path($tmp_dir . '/' .$_REQUEST['file']);
+
 if($tmp === false)
 	err(404,'File or Directory Not Found');
 if(substr($tmp, 0,strlen($tmp_dir)) !== $tmp_dir)
@@ -134,6 +135,22 @@ function is_recursively_deleteable($d) {
 	}
 	return true;
 }
+
+// from: http://php.net/manual/en/function.realpath.php#84012
+function get_absolute_path($path) {
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+        $absolutes = [];
+        foreach ($parts as $part) {
+            if ('.' == $part) continue;
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
+        }
+        return implode(DIRECTORY_SEPARATOR, $absolutes);
+    }
 
 function err($code,$msg) {
 	echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
