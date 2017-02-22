@@ -13,7 +13,18 @@ Just copy `index.php` to a folder on your webserver.
 - Suits my aesthetics.  More like Dropbox, and less like Windows Explorer
 - Works with Unicode file names
 - The interface is usable from an iPad
-- XSRF protection (though no authentication system)
+- XSRF protection, and an optional password.
+
+## Do not allow uploads on the public web
+
+If you allow uploads on the public web, it is only a matter of time before your server is hosting and serving very illegal content. Any of the following options will prevent this:
+ - Don't make the folder writable by the webserver `chmod 775`
+ - Set `$allow_upload = false`
+ - Use a password `$PASSWORD = 'some password'`
+ - Use a `.htaccess` file with Apache, or `auth_basic` for nginx
+ - Only use this on a private network
+
+ HT: [@beardog108](https://github.com/beardog108)
 
 ## Screenshot
 
