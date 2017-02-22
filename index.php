@@ -36,9 +36,10 @@ if($PASSWORD) {
 setlocale(LC_ALL,'en_US.UTF-8');
 
 $tmp = realpath($_REQUEST['file']);
+$tmp_dir = dirname($_SERVER['SCRIPT_FILENAME']);
 if($tmp === false)
 	err(404,'File or Directory Not Found');
-if(substr($tmp, 0,strlen(__DIR__)) !== __DIR__)
+if(substr($tmp, 0,strlen($tmp_dir)) !== $tmp_dir)
 	err(403,"Forbidden");
 
 if(!$_COOKIE['_sfm_xsrf'])
