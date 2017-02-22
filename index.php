@@ -15,23 +15,22 @@ $allow_create_folder = true; // Set to false to disable folder creation
 $allow_upload = true; // Set to true to allow upload files
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
 
+$PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
-/* Uncomment section below, if you want a trivial password protection */
+if($PASSWORD) {
 
-/*
-$PASSWORD = 'sfm'; 
-session_start();
-if(!$_SESSION['_sfm_allowed']) {
-	// sha1, and random bytes to thwart timing attacks.  Not meant as secure hashing.
-	$t = bin2hex(openssl_random_pseudo_bytes(10));	
-	if($_POST['p'] && sha1($t.$_POST['p']) === sha1($t.$PASSWORD)) {
-		$_SESSION['_sfm_allowed'] = true;
-		header('Location: ?');
+	session_start();
+	if(!$_SESSION['_sfm_allowed']) {
+		// sha1, and random bytes to thwart timing attacks.  Not meant as secure hashing.
+		$t = bin2hex(openssl_random_pseudo_bytes(10));	
+		if($_POST['p'] && sha1($t.$_POST['p']) === sha1($t.$PASSWORD)) {
+			$_SESSION['_sfm_allowed'] = true;
+			header('Location: ?');
+		}
+		echo '<html><body><form action=? method=post>PASSWORD:<input type=password name=p /></form></body></html>'; 
+		exit;
 	}
-	echo '<html><body><form action=? method=post>PASSWORD:<input type=password name=p /></form></body></html>'; 
-	exit;
 }
-*/
 
 // must be in UTF-8 or `basename` doesn't work
 setlocale(LC_ALL,'en_US.UTF-8');
