@@ -15,6 +15,8 @@ $allow_create_folder = true; // Set to false to disable folder creation
 $allow_upload = true; // Set to true to allow upload files
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
 
+$disallowed_extensions = array('php');  // must be an array.
+
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
 if($PASSWORD) {
@@ -97,6 +99,10 @@ if($_GET['do'] == 'list') {
 	var_dump($_POST);
 	var_dump($_FILES);
 	var_dump($_FILES['file_data']['tmp_name']);
+	foreach($disallowed_extensions as $ext) 
+		if(preg_match(sprintf('/\.%s$/',preg_quote($ext)), $_FILES['file_data']['name'])) 
+			err(403,"Files of this type are not allowed.");
+
 	var_dump(move_uploaded_file($_FILES['file_data']['tmp_name'], $file.'/'.$_FILES['file_data']['name']));
 	exit;
 } elseif ($_GET['do'] == 'download') {
