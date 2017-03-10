@@ -38,6 +38,7 @@ if($PASSWORD) {
 setlocale(LC_ALL,'en_US.UTF-8');
 
 $tmp_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+if(DIRECTORY_SEPARATOR==='\\') $tmp_dir = str_replace('/',DIRECTORY_SEPARATOR,$tmp_dir);
 $tmp = get_absolute_path($tmp_dir . '/' .$_REQUEST['file']);
 
 if($tmp === false)
