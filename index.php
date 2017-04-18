@@ -17,6 +17,8 @@ $allow_direct_link = true; // Set to false to only allow downloads and not direc
 
 $disallowed_extensions = ['php'];  // must be an array.
 
+$hidden_extensions = ['php']; // must be an array.
+
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
 if($PASSWORD) {
@@ -59,7 +61,7 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-	    foreach($files as $entry) if($entry !== basename(__FILE__)) {
+	    foreach($files as $entry) if($entry !== basename(__FILE__) && !in_array(strtolower(pathinfo($entry, PATHINFO_EXTENSION)), $hidden_extensions)) {
     		$i = $directory . '/' . $entry;
 	    	$stat = stat($i);
 	        $result[] = [
