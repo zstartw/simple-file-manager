@@ -47,6 +47,9 @@ if($tmp === false)
 	err(404,'File or Directory Not Found');
 if(substr($tmp, 0,strlen($tmp_dir)) !== $tmp_dir)
 	err(403,"Forbidden");
+if(strpos($_REQUEST['file'], DIRECTORY_SEPARATOR) === 0) 
+	err(403,"Forbidden");
+
 
 if(!$_COOKIE['_sfm_xsrf'])
 	setcookie('_sfm_xsrf',bin2hex(openssl_random_pseudo_bytes(16)));
