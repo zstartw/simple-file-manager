@@ -11,8 +11,8 @@ error_reporting( error_reporting() & ~E_NOTICE );
 
 //Security options
 $allow_delete = true; // Set to false to disable delete button and delete POST request.
-$allow_create_folder = true; // Set to false to disable folder creation
 $allow_upload = true; // Set to true to allow upload files
+$allow_create_folder = true; // Set to false to disable folder creation
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
 
 $disallowed_extensions = ['php'];  // must be an array. Extensions disallowed to be uploaded
@@ -90,7 +90,7 @@ if($_GET['do'] == 'list') {
 		rmrf($file);
 	}
 	exit;
-} elseif ($_POST['do'] == 'mkdir' && $allow_create_folder) {
+} elseif ($_POST['do'] == 'mkdir' && $allow_create_folder && $allow_upload) {
 	// don't allow actions outside root. we also filter out slashes to catch args like './../outside'
 	$dir = $_POST['name'];
 	$dir = str_replace('/', '', $dir);
