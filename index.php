@@ -277,7 +277,7 @@ $(function(){
 	$(window).bind('hashchange',list).trigger('hashchange');
 	$('#table').tablesorter();
 	
-	$('.delete').live('click',function(data) {
+	$('#table').on('click','.delete',function(data) {
 		$.post("",{'do':'delete',file:$(this).attr('data-file'),xsrf:XSRF},function(response){
 			list();
 		},'json');
