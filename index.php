@@ -90,7 +90,7 @@ if($_GET['do'] == 'list') {
 		rmrf($file);
 	}
 	exit;
-} elseif ($_POST['do'] == 'mkdir' && $allow_create_folder== true) {
+} elseif ($_POST['do'] == 'mkdir' && $allow_create_folder) {
 	// don't allow actions outside root. we also filter out slashes to catch args like './../outside'
 	$dir = $_POST['name'];
 	$dir = str_replace('/', '', $dir);
@@ -99,7 +99,7 @@ if($_GET['do'] == 'list') {
 	chdir($file);
 	@mkdir($_POST['name']);
 	exit;
-} elseif ($_POST['do'] == 'upload' && $allow_upload == true) {
+} elseif ($_POST['do'] == 'upload' && $allow_upload) {
 	var_dump($_POST);
 	var_dump($_FILES);
 	var_dump($_FILES['file_data']['tmp_name']);
@@ -294,7 +294,7 @@ $(function(){
 		$dir.val('');
 		return false;
 	});
-<?php if($allow_upload == true): ?>
+<?php if($allow_upload): ?>
 	// file upload stuff
 	$('#file_drop_target').bind('dragover',function(){
 		$(this).addClass('drag_over');
@@ -431,7 +431,7 @@ $(function(){
 </script>
 </head><body>
 <div id="top">
-   <?php if($allow_upload == true): ?>
+   <?php if($allow_upload && $allow_create_folder): ?>
 	<form action="?" method="post" id="mkdir" />
 		<label for=dirname>Create New Folder</label><input id=dirname type=text name=name value="" />
 		<input type="submit" value="create" />
@@ -439,7 +439,7 @@ $(function(){
 
    <?php endif; ?>
 
-   <?php if($allow_upload == true): ?>
+   <?php if($allow_upload): ?>
 
 	<div id="file_drop_target">
 		Drag Files Here To Upload
