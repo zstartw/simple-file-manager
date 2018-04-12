@@ -274,7 +274,7 @@ $(function(){
 	var XSRF = (document.cookie.match('(^|; )_sfm_xsrf=([^;]*)')||0)[2];
 	var MAX_UPLOAD_SIZE = <?php echo $MAX_UPLOAD_SIZE ?>;
 	var $tbody = $('#list');
-	$(window).bind('hashchange',list).trigger('hashchange');
+	$(window).on('hashchange',list).trigger('hashchange');
 	$('#table').tablesorter();
 	
 	$('#table').on('click','.delete',function(data) {
@@ -296,13 +296,13 @@ $(function(){
 	});
 <?php if($allow_upload): ?>
 	// file upload stuff
-	$('#file_drop_target').bind('dragover',function(){
+	$('#file_drop_target').on('dragover',function(){
 		$(this).addClass('drag_over');
 		return false;
-	}).bind('dragend',function(){
+	}).on('dragend',function(){
 		$(this).removeClass('drag_over');
 		return false;
-	}).bind('drop',function(e){
+	}).on('drop',function(e){
 		e.preventDefault();
 		var files = e.originalEvent.dataTransfer.files;
 		$.each(files,function(k,file) {
@@ -363,7 +363,8 @@ $(function(){
 <?php endif; ?>
 	function list() {
 		var hashval = window.location.hash.substr(1);
-		$.get('?',{'do':'list','file':hashval},function(data) {
+		console.log(hashval);
+		$.get('?do=list&file='+ hashval,function(data) {
 			$tbody.empty();
 			$('#breadcrumb').empty().html(renderBreadcrumbs(hashval));
 			if(data.success) {
@@ -406,8 +407,9 @@ $(function(){
 			$html = $('<div/>').append( $('<a href=#>Home</a></div>') );
 		$.each(path.split('/'),function(k,v){
 			if(v) {
+				var v_as_text = decodeURIComponent(v);
 				$html.append( $('<span/>').text(' ▸ ') )
-					.append( $('<a/>').attr('href','#'+base+v).text(v) );
+					.append( $('<a/>').attr('href','#'+base+v).text(v_as_text) );
 				base += v + '/';
 			}
 		});
