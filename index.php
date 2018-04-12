@@ -90,7 +90,7 @@ if($_GET['do'] == 'list') {
 		rmrf($file);
 	}
 	exit;
-} elseif ($_POST['do'] == 'mkdir' && $allow_create_folder && $allow_upload) {
+} elseif ($_POST['do'] == 'mkdir' && $allow_create_folder) {
 	// don't allow actions outside root. we also filter out slashes to catch args like './../outside'
 	$dir = $_POST['name'];
 	$dir = str_replace('/', '', $dir);
@@ -431,7 +431,7 @@ $(function(){
 </script>
 </head><body>
 <div id="top">
-   <?php if($allow_upload && $allow_create_folder): ?>
+   <?php if($allow_create_folder): ?>
 	<form action="?" method="post" id="mkdir" />
 		<label for=dirname>Create New Folder</label><input id=dirname type=text name=name value="" />
 		<input type="submit" value="create" />
