@@ -285,7 +285,7 @@ $(function(){
 	});
 
 	$('#mkdir').submit(function(e) {
-		var hashval = window.location.hash.substr(1),
+		var hashval = decodeURIComponent(window.location.hash.substr(1)),
 			$dir = $(this).find('[name=name]');
 		e.preventDefault();
 		$dir.val().length && $.post('?',{'do':'mkdir',name:$dir.val(),xsrf:XSRF,file:hashval},function(data){
@@ -319,7 +319,7 @@ $(function(){
 
 
 	function uploadFile(file) {
-		var folder = window.location.hash.substr(1);
+		var folder = decodeURIComponent(window.location.hash.substr(1));
 
 		if(file.size > MAX_UPLOAD_SIZE) {
 			var $error_row = renderFileSizeErrorRow(file,folder);
@@ -363,7 +363,6 @@ $(function(){
 <?php endif; ?>
 	function list() {
 		var hashval = window.location.hash.substr(1);
-		console.log(hashval);
 		$.get('?do=list&file='+ hashval,function(data) {
 			$tbody.empty();
 			$('#breadcrumb').empty().html(renderBreadcrumbs(hashval));
