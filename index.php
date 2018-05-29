@@ -26,12 +26,12 @@ if($PASSWORD) {
 	session_start();
 	if(!$_SESSION['_sfm_allowed']) {
 		// sha1, and random bytes to thwart timing attacks.  Not meant as secure hashing.
-		$t = bin2hex(openssl_random_pseudo_bytes(10));	
+		$t = bin2hex(openssl_random_pseudo_bytes(10));
 		if($_POST['p'] && sha1($t.$_POST['p']) === sha1($t.$PASSWORD)) {
 			$_SESSION['_sfm_allowed'] = true;
 			header('Location: ?');
 		}
-		echo '<html><body><form action=? method=post>PASSWORD:<input type=password name=p /></form></body></html>'; 
+		echo '<html><body><form action=? method=post>PASSWORD:<input type=password name=p /></form></body></html>';
 		exit;
 	}
 }
@@ -47,7 +47,7 @@ if($tmp === false)
 	err(404,'File or Directory Not Found');
 if(substr($tmp, 0,strlen($tmp_dir)) !== $tmp_dir)
 	err(403,"Forbidden");
-if(strpos($_REQUEST['file'], DIRECTORY_SEPARATOR) === 0) 
+if(strpos($_REQUEST['file'], DIRECTORY_SEPARATOR) === 0)
 	err(403,"Forbidden");
 
 
@@ -103,8 +103,8 @@ if($_GET['do'] == 'list') {
 	var_dump($_POST);
 	var_dump($_FILES);
 	var_dump($_FILES['file_data']['tmp_name']);
-	foreach($disallowed_extensions as $ext) 
-		if(preg_match(sprintf('/\.%s$/',preg_quote($ext)), $_FILES['file_data']['name'])) 
+	foreach($disallowed_extensions as $ext)
+		if(preg_match(sprintf('/\.%s$/',preg_quote($ext)), $_FILES['file_data']['name']))
 			err(403,"Files of this type are not allowed.");
 
 	var_dump(move_uploaded_file($_FILES['file_data']['tmp_name'], $file.'/'.$_FILES['file_data']['name']));
@@ -132,7 +132,7 @@ function rmrf($dir) {
 function is_recursively_deleteable($d) {
 	$stack = [$d];
 	while($dir = array_pop($stack)) {
-		if(!is_readable($dir) || !is_writable($dir)) 
+		if(!is_readable($dir) || !is_writable($dir))
 			return false;
 		$files = array_diff(scandir($dir), ['.','..']);
 		foreach($files as $file) if(is_dir($file)) {
@@ -177,7 +177,7 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 
 <style>
 body {font-family: "lucida grande","Segoe UI",Arial, sans-serif; font-size: 14px;width:1024;padding:1em;margin:0;}
-th {font-weight: normal; color: #1F75CC; background-color: #F0F9FF; padding:.5em 1em .5em .2em; 
+th {font-weight: normal; color: #1F75CC; background-color: #F0F9FF; padding:.5em 1em .5em .2em;
 	text-align: left;cursor:pointer;user-select: none;}
 th .indicator {margin-left: 6px }
 thead {border-top: 1px solid #82CFFA; border-bottom: 1px solid #96C4EA;border-left: 1px solid #E7F2FB;
@@ -260,7 +260,7 @@ a.delete {display:inline-block;
 		var $e = this.find('thead th.sort_asc, thead th.sort_desc');
 		if($e.length)
 			this.tablesortby($e.index(), $e.hasClass('sort_desc') );
-		
+
 		return this;
 	}
 	$.fn.settablesortmarkers = function() {
@@ -276,7 +276,7 @@ $(function(){
 	var $tbody = $('#list');
 	$(window).on('hashchange',list).trigger('hashchange');
 	$('#table').tablesorter();
-	
+
 	$('#table').on('click','.delete',function(data) {
 		$.post("",{'do':'delete',file:$(this).attr('data-file'),xsrf:XSRF},function(response){
 			list();
@@ -327,7 +327,7 @@ $(function(){
 			window.setTimeout(function(){$error_row.fadeOut();},5000);
 			return false;
 		}
-		
+
 		var $row = renderFileUploadRow(file,folder);
 		$('#upload_progress').append($row);
 		var fd = new FormData();
@@ -380,11 +380,11 @@ $(function(){
 	}
 	function renderFileRow(data) {
 		var $link = $('<a class="name" />')
-			.attr('href', data.is_dir ? '#' + data.path : './'+data.path)
+			.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './'+ encodeURIComponent(data.path))
 			.text(data.name);
 		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
         	if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
-		var $dl_link = $('<a/>').attr('href','?do=download&file='+encodeURIComponent(data.path))
+		var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
 			.addClass('download').text('download');
 		var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
 		var perms = [];
@@ -395,7 +395,7 @@ $(function(){
 			.addClass(data.is_dir ? 'is_dir' : '')
 			.append( $('<td class="first" />').append($link) )
 			.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
-				.html($('<span class="size" />').text(formatFileSize(data.size))) ) 
+				.html($('<span class="size" />').text(formatFileSize(data.size))) )
 			.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
 			.append( $('<td/>').text(perms.join('+')) )
 			.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
