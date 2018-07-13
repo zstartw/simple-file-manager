@@ -14,9 +14,9 @@ $allow_delete = true; // Set to false to disable delete button and delete POST r
 $allow_upload = true; // Set to true to allow upload files
 $allow_create_folder = true; // Set to false to disable folder creation
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
+$allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_extensions = ['php'];  // must be an array. Extensions disallowed to be uploaded
-
 $hidden_extensions = ['php']; // must be an array of lowercase file extensions. Extensions hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
@@ -64,9 +64,9 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-	    foreach($files as $entry) if($entry !== basename(__FILE__) && !in_array(strtolower(pathinfo($entry, PATHINFO_EXTENSION)), $hidden_extensions)) {
-    		$i = $directory . '/' . $entry;
-	    	$stat = stat($i);
+		foreach ($files as $entry) if (!is_entry_ignored($entry)) {
+		$i = $directory . '/' . $entry;
+		$stat = stat($i);
 	        $result[] = [
 	        	'mtime' => $stat['mtime'],
 	        	'size' => $stat['size'],
@@ -119,6 +119,25 @@ if($_GET['do'] == 'list') {
 	readfile($file);
 	exit;
 }
+
+function is_entry_ignored($entry) {
+	if ($entry === basename(__FILE__)) {
+		return true;
+	}
+
+	global $allow_show_folders;
+	if (is_dir($entry) && !$allow_show_folders) {
+		return true;
+	}
+
+	$ext = strtolower(pathinfo($entry, PATHINFO_EXTENSION));
+	if (in_array($ext, $hidden_extensions)) {
+		return true;
+	}
+
+	return false;
+}
+
 function rmrf($dir) {
 	if(is_dir($dir)) {
 		$files = array_diff(scandir($dir), ['.','..']);
