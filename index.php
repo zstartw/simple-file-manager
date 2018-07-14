@@ -64,7 +64,7 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-		foreach ($files as $entry) if (!is_entry_ignored($entry)) {
+		foreach ($files as $entry) if (!is_entry_ignored($entry, $allow_show_folders, $hidden_extensions)) {
 		$i = $directory . '/' . $entry;
 		$stat = stat($i);
 	        $result[] = [
@@ -120,12 +120,11 @@ if($_GET['do'] == 'list') {
 	exit;
 }
 
-function is_entry_ignored($entry) {
+function is_entry_ignored($entry, $allow_show_folders, $hidden_extensions) {
 	if ($entry === basename(__FILE__)) {
 		return true;
 	}
 
-	global $allow_show_folders;
 	if (is_dir($entry) && !$allow_show_folders) {
 		return true;
 	}
