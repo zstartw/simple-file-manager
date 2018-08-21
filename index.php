@@ -111,7 +111,8 @@ if($_GET['do'] == 'list') {
 	exit;
 } elseif ($_GET['do'] == 'download') {
 	$filename = basename($file);
-	header('Content-Type: ' . mime_content_type($file));
+	$finfo = finfo_open(FILEINFO_MIME_TYPE);
+	header('Content-Type: ' . finfo_file($finfo, $file));
 	header('Content-Length: '. filesize($file));
 	header(sprintf('Content-Disposition: attachment; filename=%s',
 		strpos('MSIE',$_SERVER['HTTP_REFERER']) ? rawurlencode($filename) : "\"$filename\"" ));
