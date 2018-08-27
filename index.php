@@ -12,12 +12,12 @@ error_reporting( error_reporting() & ~E_NOTICE );
 //Security options
 $allow_delete = true; // Set to false to disable delete button and delete POST request.
 $allow_upload = true; // Set to true to allow upload files
-$allow_create_folder = true; // Set to false to disable folder creation
+$allow_create_folder = false; // Set to false to disable folder creation
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
-$allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_extensions = ['php'];  // must be an array. Extensions disallowed to be uploaded
-$hidden_extensions = ['php']; // must be an array of lowercase file extensions. Extensions hidden in directory index
+
+$hidden_extensions = ['apk']; // must be an array of lowercase file extensions. Extensions hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -64,17 +64,16 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-		foreach ($files as $entry) if (!is_entry_ignored($entry, $allow_show_folders, $hidden_extensions)) {
-		$i = $directory . '/' . $entry;
-		$stat = stat($i);
+	    foreach($files as $entry) if($entry !== basename(__FILE__) && in_array(strtolower(pathinfo($entry, PATHINFO_EXTENSION)), $hidden_extensions)) {
+    		$i = $directory . '/' . $entry;
+	    	$stat = stat($i);
 	        $result[] = [
 	        	'mtime' => $stat['mtime'],
 	        	'size' => $stat['size'],
 	        	'name' => basename($i),
 	        	'path' => preg_replace('@^\./@', '', $i),
 	        	'is_dir' => is_dir($i),
-	        	'is_deleteable' => $allow_delete && ((!is_dir($i) && is_writable($directory)) ||
-                                                           (is_dir($i) && is_writable($directory) && is_recursively_deleteable($i))),
+	        	'is_deleteable' => $allow_delete && ((!is_dir($i) && is_writable($directory) && posix_getpwuid(fileowner($i))['name'] != 'jenkins') && !strpos(basename($i), 'release') || (is_dir($i) && is_writable($directory) && is_recursively_deleteable($i))),
 	        	'is_readable' => is_readable($i),
 	        	'is_writable' => is_writable($i),
 	        	'is_executable' => is_executable($i),
@@ -103,7 +102,6 @@ if($_GET['do'] == 'list') {
 	foreach($disallowed_extensions as $ext)
 		if(preg_match(sprintf('/\.%s$/',preg_quote($ext)), $_FILES['file_data']['name']))
 			err(403,"Files of this type are not allowed.");
-
 	$res = move_uploaded_file($_FILES['file_data']['tmp_name'], $file.'/'.$_FILES['file_data']['name']);
 	exit;
 } elseif ($_GET['do'] == 'download') {
@@ -117,24 +115,6 @@ if($_GET['do'] == 'list') {
 	readfile($file);
 	exit;
 }
-
-function is_entry_ignored($entry, $allow_show_folders, $hidden_extensions) {
-	if ($entry === basename(__FILE__)) {
-		return true;
-	}
-
-	if (is_dir($entry) && !$allow_show_folders) {
-		return true;
-	}
-
-	$ext = strtolower(pathinfo($entry, PATHINFO_EXTENSION));
-	if (in_array($ext, $hidden_extensions)) {
-		return true;
-	}
-
-	return false;
-}
-
 function rmrf($dir) {
 	if(is_dir($dir)) {
 		$files = array_diff(scandir($dir), ['.','..']);
@@ -192,7 +172,7 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
 <style>
-body {font-family: "lucida grande","Segoe UI",Arial, sans-serif; font-size: 14px;width:1024;padding:1em;margin:0;}
+body {font-family: "lucida grande","Segoe UI",Arial, sans-serif; font-size: 25px;width:1024;padding:1em;margin:0;}
 th {font-weight: normal; color: #1F75CC; background-color: #F0F9FF; padding:.5em 1em .5em .2em;
 	text-align: left;cursor:pointer;user-select: none;}
 th .indicator {margin-left: 6px }
@@ -200,7 +180,7 @@ thead {border-top: 1px solid #82CFFA; border-bottom: 1px solid #96C4EA;border-le
 	border-right: 1px solid #E7F2FB; }
 #top {height:52px;}
 #mkdir {display:inline-block;float:right;padding-top:16px;}
-label { display:block; font-size:11px; color:#555;}
+label { display:block; font-size:18px; color:#555;}
 #file_drop_target {width:500px; padding:12px 0; border: 4px dashed #ccc;font-size:12px;color:#ccc;
 	text-align: center;float:right;margin-right:20px;}
 #file_drop_target.drag_over {border: 4px dashed #96C4EA; color: #96C4EA;}
@@ -219,8 +199,8 @@ a:hover {text-decoration: underline}
 .sort_hide{ display:none;}
 table {border-collapse: collapse;width:100%;}
 thead {max-width: 1024px}
-td { padding:.2em 1em .2em .2em; border-bottom:1px solid #def;height:30px; font-size:12px;white-space: nowrap;}
-td.first {font-size:14px;white-space: normal;}
+td { padding:.2em 1em .2em .2em; border-bottom:1px solid #def;height:30px; font-size:18px;white-space: nowrap;}
+td.first {font-size:18px;white-space: normal;}
 td.empty { color:#777; font-style: italic; text-align: center;padding:3em 0;}
 .is_dir .size {color:transparent;font-size:0;}
 .is_dir .size:before {content: "--"; font-size:14px;color:#333;}
@@ -401,7 +381,7 @@ $(function(){
 		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
         	if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
 		var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
-			.addClass('download').text('download');
+			.addClass('download').text('点击下载');
 		var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
 		var perms = [];
 		if(data.is_readable) perms.push('read');
@@ -413,13 +393,12 @@ $(function(){
 			.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
 				.html($('<span class="size" />').text(formatFileSize(data.size))) )
 			.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
-			.append( $('<td/>').text(perms.join('+')) )
 			.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
 		return $html;
 	}
 	function renderBreadcrumbs(path) {
 		var base = "",
-			$html = $('<div/>').append( $('<a href=#>Home</a></div>') );
+			$html = $('<div/>').append( $('<a href=#>自动化打包列表</a></div>') );
 		$.each(path.split('/'),function(k,v){
 			if(v) {
 				var v_as_text = decodeURIComponent(v);
@@ -431,9 +410,10 @@ $(function(){
 		return $html;
 	}
 	function formatTimestamp(unix_timestamp) {
-		var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		// var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		var m = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 		var d = new Date(unix_timestamp*1000);
-		return [m[d.getMonth()],' ',d.getDate(),', ',d.getFullYear()," ",
+		return [m[d.getMonth()],'-',d.getDate(),"-", d.getFullYear()," ",
 			(d.getHours() % 12 || 12),":",(d.getMinutes() < 10 ? '0' : '')+d.getMinutes(),
 			" ",d.getHours() >= 12 ? 'PM' : 'AM'].join('');
 	}
@@ -447,7 +427,16 @@ $(function(){
 
 </script>
 </head><body>
+
+<div>
+<b>网站二维码地址</b></div>
+<img src="./qr_url.png"  height="200" width="200">
+</div>
+
+
 <div id="top">
+
+
    <?php if($allow_create_folder): ?>
 	<form action="?" method="post" id="mkdir" />
 		<label for=dirname>Create New Folder</label><input id=dirname type=text name=name value="" />
@@ -455,7 +444,7 @@ $(function(){
 	</form>
 
    <?php endif; ?>
-
+   
    <?php if($allow_upload): ?>
 
 	<div id="file_drop_target">
@@ -467,15 +456,17 @@ $(function(){
 	<div id="breadcrumb">&nbsp;</div>
 </div>
 
+
 <div id="upload_progress"></div>
 <table id="table"><thead><tr>
-	<th>Name</th>
-	<th>Size</th>
-	<th>Modified</th>
-	<th>Permissions</th>
-	<th>Actions</th>
+	<th>文件名</th>
+	<th>文件大小</th>
+	<th>修改时间</th>
+	<th>操作</th>
 </tr></thead><tbody id="list">
 
 </tbody></table>
+
+
 <footer>simple php filemanager by <a href="https://github.com/jcampbell1">jcampbell1</a></footer>
 </body></html>
